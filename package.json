@@ -1,0 +1,13 @@
+{
+  "name": "counter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Daniel Nehrig <daniel.nehrig@dnehrig.com>",
+  "license": "MIT",
+  "scripts": {
+    "build": "tailwindcss -i input.css -o style.css"
+  },
+  "dependencies": {
+    "tailwindcss": "3.3.3"
+  }
+}
