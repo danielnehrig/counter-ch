@@ -3,6 +3,8 @@ const displayTime = document.getElementById("displayTime"); // displays the spen
 const counterButton = document.getElementById("counter"); // counter button element
 const resetButton = document.getElementById("reset"); // reset button element
 const displayTimeTable = document.getElementById("displayTimeTable"); // displays the table of timestamps
+const downloadButton = document.getElementById("download");
+const uploadButton = document.getElementById("upload");
 
 /**
  * Delay the execution of the next line
@@ -29,11 +31,8 @@ let buffer = [];
 const countdownHandler = () => {
   buffer.push(Date.now());
 
-  if (buffer.length === 1) {
-    counterButton.innerHTML = "Stop";
-  } else {
-    counterButton.innerHTML = "Start";
-  }
+  if (buffer.length === 1) counterButton.innerHTML = "Stop";
+  if (buffer.length === 2) counterButton.innerHTML = "Start";
 
   if (buffer.length > 1) {
     persistance.push(buffer);
@@ -50,6 +49,36 @@ const resetHandler = () => {
   persistance = [];
   buffer = [];
   localStorage.setItem("persistance", JSON.stringify(persistance));
+  displayTable();
+};
+
+/**
+ * Download Current Data
+ */
+const downloadHandler = () => {
+  const data = JSON.stringify(persistance);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  if (!downloadButton) return;
+  downloadButton.href = url;
+};
+
+/**
+ * Upload your file
+ * @param {Event} e
+ */
+const uploadHandler = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.readAsText(file, "UTF-8");
+  reader.onload = (readerEvent) => {
+    const content = readerEvent.target.result;
+    persistance = JSON.parse(content);
+    localStorage.setItem("persistance", JSON.stringify(persistance));
+    displayTable();
+    displayCounter(); // init display counter
+  };
 };
 
 /**
@@ -98,6 +127,7 @@ const displayCounter = () => {
  */
 const displayTable = () => {
   if (displayTimeTable) {
+    displayTimeTable.innerHTML = ""; // reset the time table on every call
     persistance.forEach((data) => {
       const row = document.createElement("tr");
       const start = document.createElement("td");
@@ -134,8 +164,10 @@ const render = async () => {
   }
 };
 
-// entry point
-const main = () => {
+/**
+ * Register the handlers
+ */
+const registerHandlers = () => {
   if (counterButton) {
     counterButton.addEventListener("click", countdownHandler);
   }
@@ -143,7 +175,21 @@ const main = () => {
   if (resetButton) {
     resetButton.addEventListener("click", resetHandler);
   }
+
+  if (downloadButton) {
+    download.addEventListener("click", downloadHandler);
+  }
+
+  if (uploadButton) {
+    uploadButton.addEventListener("change", uploadHandler);
+  }
+};
+
+// entry point
+const main = () => {
+  registerHandlers();
   render();
 };
 
+// execute the main function
 main();
