@@ -193,3 +193,57 @@ const main = () => {
 
 // execute the main function
 main();
+
+/**
+ * Main Control Flow
+ * 1. Entry Point Get Called aka main
+ * 2. Main calls registerHandlers to attach events to the buttons
+ * 3. Main calls render to display the table and the counter
+ * 4. Render calls displayTable to display the table
+ * 5. Render calls displayCounter to display the counter
+ * 6. Render calls delay to delay the execution of the next line to slow down the loop for performance reasons
+ * 7. Render calls displayCounter to update the counter if the buffer has one timestamp
+ *
+ * Event Flow
+ *
+ * Counter Click
+ * 1. User clicks on the counter button
+ * 2. The countdownHandler gets called
+ * 3. The countdownHandler pushes the current timestamp to the buffer
+ * 4. The countdownHandler checks if the buffer has two timestamps
+ * 5. If the buffer has two timestamps the countdownHandler pushes the buffer to the persistance array
+ * 6. The countdownHandler updates the counter button text
+ * 7. The countdownHandler calls displayTable to update the table
+ * 8. The countdownHandler calls displayCounter to update the counter
+ * 9. The countdownHandler calls localStorage.setItem to persist the data
+ *
+ * Reset Click
+ * 1. User clicks on the reset button
+ * 2. The resetHandler gets called
+ * 3. The resetHandler resets the persistance array
+ * 4. The resetHandler resets the buffer array
+ * 5. The resetHandler calls localStorage.setItem to persist the data
+ * 6. The resetHandler calls displayTable to update the table
+ * 7. The resetHandler calls displayCounter to update the counter
+ *
+ * Download Click
+ * 1. User clicks on the download button
+ * 2. The downloadHandler gets called
+ * 3. The downloadHandler calls JSON.stringify to convert the persistance array to a string
+ * 4. The downloadHandler calls new Blob to create a blob from the string
+ * 5. The downloadHandler calls URL.createObjectURL to create a url from the blob
+ * 6. The downloadHandler sets the href attribute of the download button to the url
+ *
+ * Upload Click
+ * 1. User clicks on the upload button
+ * 2. The uploadHandler gets called
+ * 3. The uploadHandler calls e.target.files to get the file
+ * 4. The uploadHandler calls new FileReader to read the file
+ * 5. The uploadHandler calls readAsText to read the file as text
+ * 6. The uploadHandler calls reader.onload to get the content of the file
+ * 7. The uploadHandler calls JSON.parse to convert the content to an array
+ * 8. The uploadHandler sets the persistance array to the parsed array
+ * 9. The uploadHandler calls localStorage.setItem to persist the data
+ * 10. The uploadHandler calls displayTable to update the table
+ * 11. The uploadHandler calls displayCounter to update the counter
+ */
