@@ -50,6 +50,7 @@ const resetHandler = () => {
   buffer = [];
   localStorage.setItem("persistance", JSON.stringify(persistance));
   displayTable();
+  displayCounter();
 };
 
 /**
@@ -117,8 +118,9 @@ const calculateCurrentPastTime = () => {
  */
 const displayCounter = () => {
   const data = calculateCurrentPastTime();
+  const time = timeConverter(data);
   if (displayTime) {
-    displayTime.innerHTML = `Total Time Spend: ${data}ms`;
+    displayTime.innerHTML = `Total Time Spend: ${time}`;
   }
 };
 
@@ -136,7 +138,7 @@ const displayTable = () => {
 
       start.innerHTML = new Date(data[0]).toLocaleTimeString();
       end.innerHTML = new Date(data[1]).toLocaleTimeString();
-      time.innerHTML = get_time(data);
+      time.innerHTML = timeConverter(get_time(data));
 
       row.appendChild(start);
       row.appendChild(end);
@@ -145,6 +147,18 @@ const displayTable = () => {
       displayTimeTable.appendChild(row);
     });
   }
+};
+
+/**
+ * Converts the time to a human readable format
+ * @param {number} time
+ */
+const timeConverter = (time) => {
+  const hours = Math.floor(time / 3600000);
+  const minutes = Math.floor((time - hours * 3600000) / 60000);
+  const seconds = Math.floor((time - hours * 3600000 - minutes * 60000) / 1000);
+  const milliseconds = time % 1000;
+  return `${hours}h:${minutes}m:${seconds}s:${milliseconds}ms`;
 };
 
 /**
