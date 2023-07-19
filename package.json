@@ -8,6 +8,7 @@
     "build": "tailwindcss -i input.css -o style.css"
   },
   "dependencies": {
+    "@tailwindcss/typography": "^0.5.9",
     "tailwindcss": "3.3.3"
   }
 }

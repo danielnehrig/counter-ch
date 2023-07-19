@@ -4,7 +4,8 @@ const counterButton = document.getElementById("counter"); // counter button elem
 const resetButton = document.getElementById("reset"); // reset button element
 const displayTimeTable = document.getElementById("displayTimeTable"); // displays the table of timestamps
 const downloadButton = document.getElementById("download");
-const uploadButton = document.getElementById("upload");
+const uploadButton = document.getElementById("uploadProxy");
+const inputFile = document.getElementById("upload");
 
 /**
  * Delay the execution of the next line
@@ -120,7 +121,7 @@ const displayCounter = () => {
   const data = calculateCurrentPastTime();
   const time = timeConverter(data);
   if (displayTime) {
-    displayTime.innerHTML = `Total Time Spend: ${time}`;
+    displayTime.innerHTML = `${time}`;
   }
 };
 
@@ -194,8 +195,9 @@ const registerHandlers = () => {
     download.addEventListener("click", downloadHandler);
   }
 
-  if (uploadButton) {
-    uploadButton.addEventListener("change", uploadHandler);
+  if (inputFile && uploadButton) {
+    inputFile.addEventListener("change", uploadHandler);
+    uploadButton.addEventListener("click", () => inputFile.click());
   }
 };
 
