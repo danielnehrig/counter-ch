@@ -1,7 +1,8 @@
-const displayTime = document.getElementById("displayTime");
-const counterButton = document.getElementById("counter");
-const resetButton = document.getElementById("reset");
-const displayTimeTable = document.getElementById("displayTimeTable");
+// Bunch of dom selects
+const displayTime = document.getElementById("displayTime"); // displays the spend time the counter was running
+const counterButton = document.getElementById("counter"); // counter button element
+const resetButton = document.getElementById("reset"); // reset button element
+const displayTimeTable = document.getElementById("displayTimeTable"); // displays the table of timestamps
 
 /**
  * Delay the execution of the next line
@@ -37,6 +38,7 @@ const countdownHandler = () => {
   if (buffer.length > 1) {
     persistance.push(buffer);
     localStorage.setItem("persistance", JSON.stringify(persistance));
+    displayTable();
     buffer = [];
   }
 };
@@ -96,7 +98,6 @@ const displayCounter = () => {
  */
 const displayTable = () => {
   if (displayTimeTable) {
-    displayTimeTable.innerHTML = "";
     persistance.forEach((data) => {
       const row = document.createElement("tr");
       const start = document.createElement("td");
@@ -120,13 +121,20 @@ const displayTable = () => {
  * Renders the time spend
  */
 const render = async () => {
+  displayTable(); // init display table
+  displayCounter(); // init display counter
+  // update the view
   while (true) {
-    displayCounter();
-    displayTable();
-    await delay(50);
+    if (buffer.length === 1) {
+      displayCounter();
+      await delay(50);
+    } else {
+      await delay(500);
+    }
   }
 };
 
+// entry point
 const main = () => {
   if (counterButton) {
     counterButton.addEventListener("click", countdownHandler);
