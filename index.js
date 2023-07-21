@@ -1,12 +1,3 @@
-// Bunch of dom selects
-const displayTime = document.getElementById("displayTime"); // displays the spend time the counter was running
-const counterButton = document.getElementById("counter"); // counter button element
-const resetButton = document.getElementById("reset"); // reset button element
-const displayTimeTable = document.getElementById("displayTimeTable"); // displays the table of timestamps
-const downloadButton = document.getElementById("download");
-const uploadButton = document.getElementById("uploadProxy");
-const inputFile = document.getElementById("upload");
-
 /**
  * Delay the execution of the next line
  * @param {number} time
@@ -14,11 +5,14 @@ const inputFile = document.getElementById("upload");
  */
 const delay = (time) => new Promise((resolve) => setTimeout(resolve, time));
 
+const isBrowser = typeof window !== "undefined";
+const isNode = typeof process !== "undefined";
+
 /**
  * Persistance data
  * @type {number[][]}
  */
-let persistance = JSON.parse(localStorage.getItem("persistance")) || [];
+let persistance = [];
 
 /**
  * Buffer the timestamps
@@ -31,14 +25,20 @@ let buffer = [];
  */
 const countdownHandler = () => {
   buffer.push(Date.now());
+  if (isBrowser) {
+    const counterButton = document.getElementById("counter"); // counter button element
 
-  if (buffer.length === 1) counterButton.innerHTML = "Stop";
-  if (buffer.length === 2) counterButton.innerHTML = "Start";
+    if (buffer.length === 1) counterButton.innerHTML = "Stop";
+    if (buffer.length === 2) counterButton.innerHTML = "Start";
+  }
 
   if (buffer.length > 1) {
     persistance.push(buffer);
-    localStorage.setItem("persistance", JSON.stringify(persistance));
-    displayTable();
+    if (isBrowser) {
+      localStorage.setItem("persistance", JSON.stringify(persistance));
+      displayTable();
+    }
+
     buffer = [];
   }
 };
@@ -61,6 +61,7 @@ const downloadHandler = () => {
   const data = JSON.stringify(persistance);
   const blob = new Blob([data], { type: "application/json" });
   const url = URL.createObjectURL(blob);
+  const downloadButton = document.getElementById("download");
   if (!downloadButton) return;
   downloadButton.href = url;
 };
@@ -120,6 +121,7 @@ const calculateCurrentPastTime = () => {
 const displayCounter = () => {
   const data = calculateCurrentPastTime();
   const time = timeConverter(data);
+  const displayTime = document.getElementById("displayTime"); // displays the spend time the counter was running
   if (displayTime) {
     displayTime.innerHTML = `${time}`;
   }
@@ -129,6 +131,7 @@ const displayCounter = () => {
  * Updates the view with the time table
  */
 const displayTable = () => {
+  const displayTimeTable = document.getElementById("displayTimeTable"); // displays the table of timestamps
   if (displayTimeTable) {
     displayTimeTable.innerHTML = ""; // reset the time table on every call
     persistance.forEach((data) => {
@@ -183,6 +186,11 @@ const render = async () => {
  * Register the handlers
  */
 const registerHandlers = () => {
+  const counterButton = document.getElementById("counter"); // counter button element
+  const resetButton = document.getElementById("reset"); // reset button element
+  const downloadButton = document.getElementById("download");
+  const uploadButton = document.getElementById("uploadProxy");
+  const inputFile = document.getElementById("upload");
   if (counterButton) {
     counterButton.addEventListener("click", countdownHandler);
   }
@@ -201,10 +209,34 @@ const registerHandlers = () => {
   }
 };
 
-// entry point
-const main = () => {
+/**
+ * browser context
+ */
+const browser_main = () => {
+  if (isBrowser)
+    persistance = JSON.parse(localStorage.getItem("persistance")) || [];
+
   registerHandlers();
   render();
+};
+
+/**
+ * Node context
+ */
+const node_main = async () => {
+  countdownHandler();
+  await delay(1000);
+  countdownHandler();
+  countdownHandler();
+  await delay(1000);
+  countdownHandler();
+  console.log(persistance);
+};
+
+// entry point
+const main = () => {
+  if (isBrowser) browser_main();
+  if (isNode) node_main();
 };
 
 // execute the main function
